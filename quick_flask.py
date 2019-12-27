@@ -62,6 +62,8 @@ def check_file(filename,str):
     else :
         return False
 
+def check_table(tablesID):
+    return check_file(prayTablePath,tablesID)
 
 
 def createDirectory(dir):
@@ -99,9 +101,19 @@ def handle_message(event):
     clientMessage=event.message.text
     clientMessageArray=clientMessage.split()
     if clientMessageArray[0]=="Fudge":
+        
+        
+        
         if "禱告名單" in clientMessage:
             createDirectory(prayDirectory)
-            
+            sourceID=get_source(event)
+            if check_table(sourceID['group_id']):
+                clientMessage="table exists"
+            else:
+                clientMessage="Need create new pray table"
+            profile = line_bot_api.get_profile(sourceID['user_id'])
+            clientMessage="Hi "+profile.display_name+" "+clientMessage
+            line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
             
         if "reply" in clientMessage:
             clientMessage=clientMessage.replace("Fudge ","")
