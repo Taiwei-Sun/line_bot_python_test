@@ -18,6 +18,50 @@ line_bot_api = LineBotApi('yjc2B9p8sbGN7jutAUPASpmJUE+AYwjq96P6ErBD7kGZ5P1BWC4aF
 handler = WebhookHandler('48937fdda35c6bf04da439ff7fb9f5fc')
 
 prayDirectory="prayTmp"
+prayTable="prayTmp.txt"
+prayTablePath=prayDirectory+'/'+prayTable
+
+def get_source(event):
+    if event.source.type == 'user':
+        return {'bot_id':os.environ.get('bot_id', None), 'group_id':None, 'user_id':event.source.user_id}
+    elif event.source.type == 'group':
+        return {'bot_id':os.environ.get('bot_id', None), 'group_id':event.source.group_id, 'user_id':event.source.user_id}
+    elif event.source.type == 'room':
+        return {'bot_id':os.environ.get('bot_id', None), 'group_id':event.source.room_id, 'user_id':event.source.user_id}
+    else:
+        raise Exception('event.source.type:%s' % event.source.type)
+        
+def modify_file(filename,str,type):
+    contents=""
+    if os.path.exists(filename):
+        myfileR = open(filename, 'r')
+        contents =myfileR.read()
+        myfileR.close()
+    
+    myfile = open(filename, 'w+')
+    
+    if type == "add":
+        contents=contents+str+'\n'
+    
+    if type == "delete":
+        contents=contents.replace(str+'\n',"")
+    
+    # Write a line to the file
+    myfile.write(contents)
+    # Close the file
+    myfile.close()
+
+def check_file(filename,str):
+    contents=""
+    if os.path.exists(filename):
+        myfileR = open(filename, 'r')
+        contents =myfileR.read()
+        myfileR.close()
+    if str+'\n' in contents:
+        return True
+    else :
+        return False
+
 
 
 def createDirectory(dir):
@@ -55,11 +99,18 @@ def handle_message(event):
     clientMessage=event.message.text
     clientMessageArray=clientMessage.split()
     if clientMessageArray[0]=="Fudge":
-        clientMessage=clientMessage.replace("Fudge ","")
-        line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
+        if "禱告名單" in clientMessage:
+            createDirectory(prayDirectory)
+            
+            
+        if "reply" in clientMessage:
+            clientMessage=clientMessage.replace("Fudge ","")
+            sourceID=get_source(event)
+            profile = line_bot_api.get_profile(sourceID['user_id'])
+            clientMessage="Hi "+profile.display_name+" "+clientMessage
+            line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
     
-    if "禱告名單" in clientMessage:
-        createDirectory(prayDirectory)
+    
         
         
 
