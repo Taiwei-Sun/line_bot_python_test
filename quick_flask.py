@@ -39,6 +39,12 @@ def handle_message(event):
     clientMessage=event.message.text
     clientMessageArray=clientMessage.split()
     if clientMessageArray[0]=="Fudge":
+        if event.source.type == 'user':
+            clientMessage=clientMessage+"user id:"+event.source.user_id
+        elif event.source.type == 'group':
+            clientMessage=clientMessage+"group id:"+event.source.group_id
+        elif event.source.type == 'room':
+            clientMessage=clientMessage+"room id:"+event.source.room_id
         clientMessage=clientMessage.replace("Fudge ","")
         line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
 
