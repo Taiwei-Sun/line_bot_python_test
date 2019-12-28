@@ -136,6 +136,7 @@ def handle_message(event):
     clientMessage=event.message.text
     clientMessageArray=clientMessage.split()
     sourceID=get_source(event)
+    profile = line_bot_api.get_profile(sourceID['user_id']) #get user profile
     
     if (clientMessage[:2]=="1+" or clientMessage[:2]=="2+") and sourceID['group_id']!=None and check_table(sourceID['group_id']):
         newName=clientMessage[1:]
@@ -162,7 +163,6 @@ def handle_message(event):
     line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
     
     if clientMessageArray[0]=="Fudge" : #"pray table not for personal use"
-        profile = line_bot_api.get_profile(sourceID['user_id']) #get user profile
         
         if "reply" in clientMessage:
             clientMessage=clientMessage.replace("Fudge ","")
