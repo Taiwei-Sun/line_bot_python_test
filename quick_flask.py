@@ -74,9 +74,9 @@ def test_tables():
         #for command in commands:
         #    cur.execute(command)
         
-        cur.execute(commands[2])
-        cur.execute(commands[3])
-        cur.execute(commands[4])
+        #cur.execute(commands[2])
+        #cur.execute(commands[3])
+        #cur.execute(commands[4])
         cur.execute(commands[0])
         cur.execute(commands[1])
         print("The number of parts: ", cur.rowcount)
@@ -249,10 +249,7 @@ def handle_message(event):
             clientMessage="Hi "+profile.display_name+", "+clientMessage
         
         line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
-    
-    
-test_tables()
-print("DB down")       
+           
         
 
 
