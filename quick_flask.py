@@ -11,6 +11,7 @@ from linebot.models import (
 )
 
 import os
+import psycopg2
 
 app = Flask(__name__)
 
@@ -20,6 +21,80 @@ handler = WebhookHandler('48937fdda35c6bf04da439ff7fb9f5fc')
 prayDirectory="prayTmp/"
 prayTable="prayTmp.txt"
 prayTablePath=prayDirectory+prayTable
+
+
+def test_tables():
+    """ create tables in the PostgreSQL database"""
+    commands = (
+        """
+        INSERT INTO prayTable(group_id,group_name)
+        VALUES('ggid','ggname');
+        """,
+        """ 
+        SELECT
+            table_id,
+            group_id,
+            group_name
+        FROM
+            prayTable;
+        """,
+        """
+        CREATE TABLE prayTable(
+            table_id serial PRIMARY KEY,
+            group_id VARCHAR (35),
+            group_name VARCHAR (50)
+        );
+        """,
+        """
+        CREATE TABLE userTable(
+            user_id serial PRIMARY KEY,
+            user_name VARCHAR (25)
+        );
+        """,
+        """
+        CREATE TABLE sessionTable(
+            session_id serial PRIMARY KEY,
+            table_id Integer,
+            user_id Integer,
+            userType SMALLINT,
+            addTime TIMESTAMP without time zone,
+            bySomeone VARCHAR (25)
+        );
+        """)
+    conn = None
+    try:
+        
+        # connect to the PostgreSQL server
+        #conn = psycopg2.connect(host="localhost",database="fudge", user="postgres", password="postgres")
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        
+        cur = conn.cursor()
+        # create table one by one
+        #for command in commands:
+        #    cur.execute(command)
+        
+        cur.execute(commands[2])
+        cur.execute(commands[3])
+        cur.execute(commands[4])
+        cur.execute(commands[0])
+        cur.execute(commands[1])
+        print("The number of parts: ", cur.rowcount)
+        
+        row = cur.fetchone()
+        while row is not None:
+            print(row)
+            row = cur.fetchone()
+        
+        # close communication with the PostgreSQL database server
+        cur.close()
+        # commit the changes
+        conn.commit()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
 
 
 
@@ -121,6 +196,8 @@ def callback():
     # get request body as text
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
+    
+
 
     # handle webhook body
     try:
@@ -144,6 +221,7 @@ def handle_message(event):
             modify_file(prayDirectory+tableName+"1",newName,"add")
         if clientMessage[:2]=="2+":
             modify_file(prayDirectory+tableName+"2",newName,"add")
+        line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
     
     if "禱告名單" in clientMessage and sourceID['group_id']!=None:
         createDirectory(prayDirectory)
@@ -158,9 +236,9 @@ def handle_message(event):
             else:
                 clientMessage=showPrayTable(sourceID['group_id'])
             clientMessage="Hi "+profile.display_name+"\n"+clientMessage
-            
+        line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
     
-    line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
+    
     
     if clientMessageArray[0]=="Fudge" : #"pray table not for personal use"
         
@@ -173,7 +251,8 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
     
     
-        
+test_tables()
+print("DB down")       
         
 
 
