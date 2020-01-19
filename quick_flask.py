@@ -62,11 +62,15 @@ def modify_tables(tableName,columns,row,accessType):
             #print("The number of parts: ", cur.rowcount)
             
             row = cur.fetchone()
-            rows=[]
-            while row is not None:
-                #print(row)
-                rows.append(row)
-                row = cur.fetchone()
+            
+            if row!=None:
+                rows=[]
+                while row is not None:
+                    #print(row)
+                    rows.append(row)
+                    row = cur.fetchone()
+            
+            
         elif accessType=='i':
             command=commands[3]+" "+tableName+"("
             for i in range(columnsLen):
@@ -175,7 +179,7 @@ def check_table(groupID):
 def get_lastTableName(groupID):
     datas=modify_tables("prayTable",[prayTableColumns[1],prayTableColumns[2]],None,'r')
     lastName=None
-    if datas==[]:return None
+    if datas==None:return None
     for i in range(len(datas)):
         if datas[i][0]==groupID: lastName=datas[i][1]
     return lastName
