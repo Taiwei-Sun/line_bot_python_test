@@ -175,6 +175,7 @@ def check_table(groupID):
 def get_lastTableName(groupID):
     datas=modify_tables("prayTable",[prayTableColumns[1],prayTableColumns[2]],None,'r')
     lastName=None
+    if datas==[]:return None
     for i in range(len(datas)):
         if datas[i][0]==groupID: lastName=datas[i][1]
     return lastName
