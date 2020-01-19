@@ -185,14 +185,7 @@ def get_lastTableName(groupID):
     return lastName
     
 
-def createDirectory(dir):
-    if not os.path.exists(dir):
-        try:
-            os.mkdir(dir)
-        except OSError:
-            print ("Creation of the directory %s failed" % dir)
-        else:
-            print ("Successfully created the directory %s " % dir)
+
 
 def createPrayTable(group_id,groupName):
     modify_tables("prayTable",[prayTableColumns[1],prayTableColumns[2]],["'"+group_id+"'","'"+groupName+"'"],'i')
@@ -275,7 +268,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
     
     if "禱告名單" in clientMessage and sourceID['group_id']!=None:
-        createDirectory(prayDirectory)
+        
         
         if "建立禱告名單:" in clientMessage:
             tableName=clientMessage.split(":")[1]
