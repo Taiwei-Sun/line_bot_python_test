@@ -146,6 +146,7 @@ def delete_prayUser(tableName,userName):
 
 def check_DB(tableName,columns,str):
     datas=modify_tables(tableName,columns,None,'r')
+    if datas==None: return False
     for data in datas:
         if data[0]==str:
             return True
