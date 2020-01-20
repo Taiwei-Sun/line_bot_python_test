@@ -26,6 +26,33 @@ prayTable=["prayTable",prayTableColumns]
 userTable=["userTable",userTableColumns]
 sessionTable=["sessionTable",sessionTableColumns]
 
+helpList="""
+可用功能
+-----------------------------
+建立禱告名單:<名單名稱>
+更名禱告名單:<名單名稱>
+1+<名子>
+2+<名子>
+1-<名子>
+2-<名子>
+-----------------------------
+
+範例:增加已確定禱告名單
+-----------------------------
+1+弟兄三號
+-----------------------------
+
+範例:增加還未確定禱告名單
+-----------------------------
+2+福音朋友二號
+-----------------------------
+
+範例:刪除還未確定禱告名單
+-----------------------------
+2-福音朋友二號
+-----------------------------
+"""
+
 
 def modify_tables(tableName,columns,row,accessType):
     rows=None
@@ -112,14 +139,12 @@ def modify_tables(tableName,columns,row,accessType):
     return rows
 
 def get_id(table,column,str):
+    table_id=None
     tableName=table[0]
     rows=modify_tables(tableName,[table[1][0],column],None,'r')
-    if rows==None: return None
-    #print("---get_id---")
-    #print(rows)
     for row in rows:
-        if row[1]==str: return row[0]
-    return None
+        if row[1]==str: table_id=row[0]
+    return table_id
 
 def get_userName(user_id):
     rows=modify_tables(userTable[0],userTable[1],None,'r')
@@ -167,37 +192,33 @@ def get_source(event):
         raise Exception('event.source.type:%s' % event.source.type)
 
 
-def check_file(filename,str):
-    contents=""
-    if os.path.exists(filename):
-        myfileR = open(filename, 'r')
-        contents =myfileR.read()
-        myfileR.close()
-    if str+'\n' in contents:
-        return True
-    else :
-        return False
 
 def check_table(groupID):
     return check_DB("prayTable",[prayTableColumns[1]],groupID)
 
 def get_lastTableName(groupID):
-    datas=modify_tables("prayTable",[prayTableColumns[1],prayTableColumns[2]],None,'r')
+    datas=modify_tables(prayTable[0],[prayTable[1][0],prayTable[1][1],prayTable[1][2]],None,'r')
     lastName=None
     if datas==None:return None
+    preID=0
     for i in range(len(datas)):
-        if datas[i][0]==groupID: lastName=datas[i][1]
+        if datas[i][1]==groupID and datas[i][0]>preID: 
+            lastName=datas[i][2]
+            preID=datas[i][0]
     return lastName
-    
 
+def rename_tableName(group_id,newTableName):
+    table_id=get_id(prayTable,prayTable[1][1],group_id)
+    modify_tables(prayTable[0],[prayTable[1][0],prayTable[1][2]],[table_id,"'"+newTableName+"'"],'u')                                                                                        
+    
 
 
 def createPrayTable(group_id,groupName):
     modify_tables("prayTable",[prayTableColumns[1],prayTableColumns[2]],["'"+group_id+"'","'"+groupName+"'"],'i')
 
-def showPrayTable(tableName):
-    table_id=get_id(prayTable,prayTable[1][1],tableName)
-    
+def showPrayTable(group_id):
+    table_id=get_id(prayTable,prayTable[1][1],group_id)
+    tableName=get_lastTableName(table_id)
     clientMessage=tableName+"\n"
     if table_id!=None:
         rows=modify_tables(sessionTable[0],[sessionTable[1][1],sessionTable[1][2],sessionTable[1][3]],None,'r')
@@ -224,7 +245,7 @@ def showPrayTable(tableName):
                     clientMessage=clientMessage+get_userName(row[1])+"\n"
         clientMessage=clientMessage+"\n"
         return clientMessage
-    return "Need create new pray table, no tableName="+tableName
+    return "not find table, no group_id="+group_id
     
 def filter_rows(table_id,rows):
     rowsF=[]
@@ -262,31 +283,42 @@ def handle_message(event):
     profile = line_bot_api.get_profile(sourceID['user_id']) #get user profile
     tableName=get_lastTableName(sourceID['group_id'])
     
-    
-    if (clientMessage[:2]=="1+" or clientMessage[:2]=="2+") and sourceID['group_id']!=None and check_table(sourceID['group_id']):
-        newName=clientMessage[2:]
-        if clientMessage[:2]=="1+":
-            add_prayUser(tableName,newName,1,profile.display_name)
-        if clientMessage[:2]=="2+":
-            add_prayUser(tableName,newName,2,profile.display_name)
-        clientMessage="Hi "+profile.display_name+" 已經加入名子 "+newName
-        line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
-    
-    if "禱告名單" in clientMessage and sourceID['group_id']!=None:
+    if sourceID['group_id']!=None:#for group
+        if (clientMessage[:2]=="1+" or clientMessage[:2]=="2+") and check_table(sourceID['group_id']):
+            newName=clientMessage[2:]
+            if clientMessage[:2]=="1+":
+                add_prayUser(tableName,newName,1,profile.display_name)
+                clientMessage="Hi "+profile.display_name+" 已經加入確認名單 "+newName
+            if clientMessage[:2]=="2+":
+                add_prayUser(tableName,newName,2,profile.display_name)
+                clientMessage="Hi "+profile.display_name+" 已經加入待確認名單 "+newName
+                
+            line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
         
+        if "禱告名單" in clientMessage and sourceID['group_id']!=None:
+            
+            
+            if "建立禱告名單:" in clientMessage:
+                tableName=clientMessage.split(":")[1]
+                createPrayTable(sourceID['group_id'],tableName)
+                clientMessage="Hi "+profile.display_name+", 已經建立禱告名單:"+tableName
+            elif "更名禱告名單:" in clientMessage:
+                None
+            else :
+                if not check_table(sourceID['group_id']):
+                    clientMessage="請建立禱告名單 範例: '建立禱告名單:2-2區禱告名單二月30號'"
+                else:
+                    clientMessage=showPrayTable(sourceID['group_id'])
+                clientMessage="Hi "+profile.display_name+"\n"+clientMessage
+            line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
+            
+            if "help" in clientMessage or "Help" in clientMessage or "HELP" in clientMessage :
+                clientMessage=helpList
+                line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
         
-        if "建立禱告名單:" in clientMessage:
-            tableName=clientMessage.split(":")[1]
-            createPrayTable(sourceID['group_id'],tableName)
-            clientMessage="Hi "+profile.display_name+", 已經建立禱告名單:"+tableName
-        else :
-            if not check_table(sourceID['group_id']):
-                clientMessage="Need create new pray table"
-            else:
-                clientMessage=showPrayTable(sourceID['group_id'])
-            clientMessage="Hi "+profile.display_name+"\n"+clientMessage
+    else:# for personal
+        clientMessage="Hi "+profile.display_name+" It cannot be used for personal use"
         line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
-    
     
     
     if clientMessageArray[0]=="Fudge" : #"pray table not for personal use"
