@@ -218,6 +218,9 @@ def createPrayTable(group_id,groupName):
 def filter_rows(table_id,rows):
     rowsF=[]
     for i in range(len(rows)):
+        print(rows[i][0])
+        print("rows[i][0]==table_id")
+        print(rows[i][0]==table_id)
         if rows[i][0]==table_id: 
             rowsF.append(rows[i])
             #print(rowsF)
@@ -232,7 +235,7 @@ def showPrayTable(group_id):
         rows=modify_tables(sessionTable[0],[sessionTable[1][1],sessionTable[1][2],sessionTable[1][3]],None,'r')
         print(rows)
         rows=filter_rows(table_id,rows)
-        print(rows)
+        print(table_id)
         number=0
         for row in rows:
             if row[2]==1:
