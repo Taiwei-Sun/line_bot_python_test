@@ -221,7 +221,7 @@ def showPrayTable(tableName):
                     clientMessage=clientMessage+get_userName(row[1])+"\n"
         clientMessage=clientMessage+"\n"
         return clientMessage
-    return "Need create new pray table, table_id="+table_id+" tableName="+tableName
+    return "Need create new pray table, no tableName="+tableName
     
 def filter_rows(table_id,rows):
     rowsF=[]
