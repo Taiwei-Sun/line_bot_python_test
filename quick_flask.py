@@ -226,13 +226,14 @@ def showPrayTable(group_id):
         
         number=0
         for row in rows:
+            print(row[1])
             if row[2]==1:
                 number=number+1
                 if number>0:
                     clientMessage=clientMessage+str(number)+". "+get_userName(row[1])+"\n"
                 else :
                     clientMessage=clientMessage+get_userName(row[1])+"\n"
-                    print(row[1])
+                    #print(row[1])
                     print("get_userName(row[1])="+get_userName(row[1]))
         clientMessage=clientMessage+"\n"
         clientMessage=clientMessage+"鼓勵中:\n"
