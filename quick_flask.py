@@ -57,7 +57,7 @@ def modify_tables(tableName,columns,row,accessType):
             #    command=command[:-2]+"\n"
             #    command=command+commands[2]+" "+
             
-            #print("command=\n"+command)
+            print("command=\n"+command+"\n")
             cur.execute(command)
             
             #print("The number of parts: ", cur.rowcount)
@@ -113,9 +113,12 @@ def modify_tables(tableName,columns,row,accessType):
 
 def get_id(table,column,str):
     tableName=table[0]
-    columns=modify_tables(tableName,[table[1][0],column],None,'r')
-    for i in range(len(columns)):
-        if columns[i][1]==str: return columns[i][0]
+    rows=modify_tables(tableName,[table[1][0],column],None,'r')
+    if rows==None: return None
+    print("---get_id---")
+    print(rows)
+    for row in rows:
+        if row[1]==str: return row[0]
     return None
 
 def get_userName(user_id):
@@ -261,7 +264,7 @@ def handle_message(event):
     
     
     if (clientMessage[:2]=="1+" or clientMessage[:2]=="2+") and sourceID['group_id']!=None and check_table(sourceID['group_id']):
-        newName=clientMessage[1:]
+        newName=clientMessage[2:]
         if clientMessage[:2]=="1+":
             add_prayUser(tableName,newName,1,profile.display_name)
         if clientMessage[:2]=="2+":
