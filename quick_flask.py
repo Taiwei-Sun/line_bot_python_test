@@ -33,8 +33,7 @@ helpList="""
 更名禱告名單:<名單名稱>
 1+<名子>
 2+<名子>
-1-<名子>
-2-<名子>
+-<名子>
 -----------------------------
 
 範例:增加已確定禱告名單
@@ -49,7 +48,7 @@ helpList="""
 
 範例:刪除還未確定禱告名單
 -----------------------------
-2-福音朋友二號
+-福音朋友二號
 -----------------------------
 """
 
@@ -233,6 +232,8 @@ def showPrayTable(group_id):
                     clientMessage=clientMessage+str(number)+". "+get_userName(row[1])+"\n"
                 else :
                     clientMessage=clientMessage+get_userName(row[1])+"\n"
+                    print(row[1])
+                    print("get_userName(row[1])="+get_userName(row[1]))
         clientMessage=clientMessage+"\n"
         clientMessage=clientMessage+"鼓勵中:\n"
         number=0
@@ -310,14 +311,15 @@ def handle_message(event):
                 createPrayTable(sourceID['group_id'],tableName)
                 clientMessage="Hi "+profile.display_name+", 已經建立禱告名單:"+tableName
             elif "更名禱告名單:" in clientMessage:
-                None
+                newTableName=clientMessage[7:]
+                rename_tableName(sourceID['group_id'],newTableName)
             else :
                 if not check_table(sourceID['group_id']):
                     clientMessage="請建立禱告名單 範例: '建立禱告名單:2-2區禱告名單二月30號'"
                 else:
                     clientMessage=showPrayTable(sourceID['group_id'])
                 clientMessage="Hi "+profile.display_name+"\n"+clientMessage
-                line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
+            line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
             
             
         
