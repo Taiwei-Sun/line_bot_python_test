@@ -40,7 +40,8 @@ def modify_tables(tableName,columns,row,accessType):
     try:
         command=""
         # connect to the PostgreSQL server
-        conn = psycopg2.connect(host="localhost",database="fudge", user="postgres", password="postgres")
+        DATABASE_URL = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         cur = conn.cursor()
         # create table one by one
         #for command in commands:
