@@ -57,7 +57,7 @@ def modify_tables(tableName,columns,row,accessType):
             #    command=command[:-2]+"\n"
             #    command=command+commands[2]+" "+
             
-            print("command=\n"+command+"\n")
+            #print("command=\n"+command+"\n")
             cur.execute(command)
             
             #print("The number of parts: ", cur.rowcount)
@@ -115,8 +115,8 @@ def get_id(table,column,str):
     tableName=table[0]
     rows=modify_tables(tableName,[table[1][0],column],None,'r')
     if rows==None: return None
-    print("---get_id---")
-    print(rows)
+    #print("---get_id---")
+    #print(rows)
     for row in rows:
         if row[1]==str: return row[0]
     return None
@@ -196,7 +196,7 @@ def createPrayTable(group_id,groupName):
     modify_tables("prayTable",[prayTableColumns[1],prayTableColumns[2]],["'"+group_id+"'","'"+groupName+"'"],'i')
 
 def showPrayTable(tableName):
-    table_id=get_id(prayTable,prayTable[1][2],tableName)
+    table_id=get_id(prayTable,prayTable[1][1],tableName)
     
     clientMessage=tableName+"\n"
     if table_id!=None:
