@@ -215,18 +215,26 @@ def rename_tableName(group_id,newTableName):
 def createPrayTable(group_id,groupName):
     modify_tables("prayTable",[prayTableColumns[1],prayTableColumns[2]],["'"+group_id+"'","'"+groupName+"'"],'i')
 
+def filter_rows(table_id,rows):
+    rowsF=[]
+    for i in range(len(rows)):
+        if rows[i][0]==table_id: 
+            rowsF.append(rows[i])
+            #print(rowsF)
+    return rowsF
+
+
 def showPrayTable(group_id):
     table_id=get_id(prayTable,prayTable[1][1],group_id)
     tableName=get_lastTableName(group_id)
     clientMessage=tableName+"\n"
     if table_id!=None:
         rows=modify_tables(sessionTable[0],[sessionTable[1][1],sessionTable[1][2],sessionTable[1][3]],None,'r')
-        
+        print(rows)
         rows=filter_rows(table_id,rows)
-        
+        print(rows)
         number=0
         for row in rows:
-            print(row[1])
             if row[2]==1:
                 number=number+1
                 if number>0:
@@ -249,13 +257,6 @@ def showPrayTable(group_id):
         return clientMessage
     return "not find table, no group_id="+group_id
     
-def filter_rows(table_id,rows):
-    rowsF=[]
-    for i in range(len(rows)):
-        if rows[i][0]==table_id: 
-            rowsF.append(rows[i])
-            #print(rowsF)
-    return rowsF
 
 @app.route("/callback", methods=['POST'])
 def callback():
