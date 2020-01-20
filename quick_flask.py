@@ -218,7 +218,7 @@ def createPrayTable(group_id,groupName):
 
 def showPrayTable(group_id):
     table_id=get_id(prayTable,prayTable[1][1],group_id)
-    tableName=get_lastTableName(table_id)
+    tableName=get_lastTableName(group_id)
     clientMessage=tableName+"\n"
     if table_id!=None:
         rows=modify_tables(sessionTable[0],[sessionTable[1][1],sessionTable[1][2],sessionTable[1][3]],None,'r')
