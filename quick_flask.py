@@ -284,7 +284,7 @@ def handle_message(event):
     tableName=get_lastTableName(sourceID['group_id'])
     
     if sourceID['group_id']!=None:#for group
-        if (clientMessage[:2]=="1+" or clientMessage[:2]=="2+") and check_table(sourceID['group_id']):
+        if (clientMessage[:2]=="1+" or clientMessage[:2]=="2+" or clientMessage[:2]=="-") and check_table(sourceID['group_id']):
             newName=clientMessage[2:]
             if clientMessage[:2]=="1+":
                 add_prayUser(tableName,newName,1,profile.display_name)
@@ -292,11 +292,18 @@ def handle_message(event):
             if clientMessage[:2]=="2+":
                 add_prayUser(tableName,newName,2,profile.display_name)
                 clientMessage="Hi "+profile.display_name+" 已經加入待確認名單 "+newName
-                
+            if clientMessage[:1]=="-":
+                if delete_prayUser(tableName,newName): clientMessage="Hi "+profile.display_name+" 已經刪除名單 "+newName
+                else: clientMessage="Hi "+profile.display_name+" "+newName+" 名子不存在"
+            
+            
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
         
         if "禱告名單" in clientMessage and sourceID['group_id']!=None:
             
+            if "help" in clientMessage or "Help" in clientMessage or "HELP" in clientMessage :
+                clientMessage=helpList
+                line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
             
             if "建立禱告名單:" in clientMessage:
                 tableName=clientMessage.split(":")[1]
@@ -310,11 +317,9 @@ def handle_message(event):
                 else:
                     clientMessage=showPrayTable(sourceID['group_id'])
                 clientMessage="Hi "+profile.display_name+"\n"+clientMessage
-            line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
-            
-            if "help" in clientMessage or "Help" in clientMessage or "HELP" in clientMessage :
-                clientMessage=helpList
                 line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
+            
+            
         
     else:# for personal
         clientMessage="Hi "+profile.display_name+" It cannot be used for personal use"
