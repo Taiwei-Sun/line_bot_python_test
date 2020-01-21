@@ -290,7 +290,7 @@ def handle_message(event):
     tableName=get_lastTableName(sourceID['group_id'])
     
     if sourceID['group_id']!=None:#for group
-        if (clientMessage[:2]=="1+" or clientMessage[:2]=="2+" or clientMessage[:2]=="-") and check_table(sourceID['group_id']):
+        if (clientMessage[:2]=="1+" or clientMessage[:2]=="2+" or clientMessage[:1]=="-") and check_table(sourceID['group_id']):
             newName=clientMessage[2:]
             if clientMessage[:2]=="1+":
                 add_prayUser(tableName,newName,1,profile.display_name)
@@ -299,6 +299,7 @@ def handle_message(event):
                 add_prayUser(tableName,newName,2,profile.display_name)
                 clientMessage="Hi "+profile.display_name+" 已經加入待確認名單 "+newName
             if clientMessage[:1]=="-":
+                print("clientMessage[:1]==\"-\"")
                 if delete_prayUser(tableName,newName): clientMessage="Hi "+profile.display_name+" 已經刪除名單 "+newName
                 else: clientMessage="Hi "+profile.display_name+" "+newName+" 名子不存在"
             
