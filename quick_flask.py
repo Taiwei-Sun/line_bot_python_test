@@ -156,7 +156,7 @@ def add_prayUser(tableName,userName,userType,provider):
     tableID=str(get_id(prayTable,prayTable[1][2],tableName))
     ts = (datetime.datetime.now()+datetime.timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S')
     ts=ts.split('.')[0]
-    modify_tables(userTable[0],[userTable[1][1]],["'"+userName+"'"],'i')
+    if get_userName(userName)==None: modify_tables(userTable[0],[userTable[1][1]],["'"+userName+"'"],'i')
     userID=str(get_id(userTable,userTable[1][1],userName))
     modify_tables(sessionTable[0],[sessionTable[1][1],sessionTable[1][2],sessionTable[1][3],sessionTable[1][4],sessionTable[1][5]],[tableID,userID,str(userType),"'"+ts+"'","'"+provider+"'"],'i')
 
