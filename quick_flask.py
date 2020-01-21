@@ -147,8 +147,8 @@ def get_id(table,column,str):
 
 def get_userName(user_id):
     rows=modify_tables(userTable[0],userTable[1],None,'r')
-    for i in range(len(rows)):
-        if rows[i][0]==user_id: return rows[i][1]
+    for row in rows:
+        if row[0]==user_id: return row[1]
     
     return None
 
@@ -233,31 +233,29 @@ def showPrayTable(group_id):
     clientMessage=tableName+"\n"
     if table_id!=None:
         rows=modify_tables(sessionTable[0],[sessionTable[1][1],sessionTable[1][2],sessionTable[1][3]],None,'r')
-        print(rows)
+        #print(rows)
         rows=filter_rows(table_id,rows)
         #print(table_id)
-        print(rows)
+        #print(rows)
         number=0
         for row in rows:
             if row[2]==1:
                 number=number+1
-                if number>0:
-                    clientMessage=clientMessage+str(number)+". "+get_userName(row[1])+"\n"
-                else :
-                    clientMessage=clientMessage+get_userName(row[1])+"\n"
-                    #print(row[1])
-                    print("get_userName(row[1])="+get_userName(row[1]))
-        clientMessage=clientMessage+"\n"
+                userTmp=get_userName(row[1])
+                if userTmp!=None: clientMessage=clientMessage+str(number)+". "+userTmp+"\n"
+                else: clientMessage=clientMessage+" no user_id="+str(row[1])
+        
+        clientMessage=clientMessage+str(number+1)+".\n"+str(number+2)+".\n"+str(number+3)+".\n"
         clientMessage=clientMessage+"鼓勵中:\n"
         number=0
         for row in rows:
             if row[2]==2:
                 number=number+1
-                if number>0:
-                    clientMessage=clientMessage+str(number)+". "+get_userName(row[1])+"\n"
-                else :
-                    clientMessage=clientMessage+get_userName(row[1])+"\n"
-        clientMessage=clientMessage+"\n"
+                userTmp=get_userName(row[1])
+                if userTmp!=None: clientMessage=clientMessage+str(number)+". "+userTmp+"\n"
+                else: clientMessage=clientMessage+" no user_id="+str(row[1])
+
+        clientMessage=clientMessage+str(number+1)+".\n"+str(number+2)+".\n"+str(number+3)+".\n"
         return clientMessage
     return "not find table, no group_id="+group_id
     
