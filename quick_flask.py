@@ -233,9 +233,10 @@ def showPrayTable(group_id):
     clientMessage=tableName+"\n"
     if table_id!=None:
         rows=modify_tables(sessionTable[0],[sessionTable[1][1],sessionTable[1][2],sessionTable[1][3]],None,'r')
-        #print(rows)
+        print(rows)
         rows=filter_rows(table_id,rows)
         #print(table_id)
+        print(rows)
         number=0
         for row in rows:
             if row[2]==1:
