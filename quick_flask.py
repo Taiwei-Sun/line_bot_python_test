@@ -308,11 +308,10 @@ def handle_message(event):
         
         if "禱告名單" in clientMessage and sourceID['group_id']!=None:
             
+            
             if "help" in clientMessage or "Help" in clientMessage or "HELP" in clientMessage :
                 clientMessage=helpList
-                line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
-            
-            if "建立禱告名單:" in clientMessage:
+            elif "建立禱告名單:" in clientMessage:
                 tableName=clientMessage.split(":")[1]
                 createPrayTable(sourceID['group_id'],tableName)
                 clientMessage="Hi "+profile.display_name+", 已經建立禱告名單:"+tableName
@@ -325,6 +324,8 @@ def handle_message(event):
                 else:
                     clientMessage=showPrayTable(sourceID['group_id'])
                 clientMessage="Hi "+profile.display_name+"\n"+clientMessage
+                
+                
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
             
             
