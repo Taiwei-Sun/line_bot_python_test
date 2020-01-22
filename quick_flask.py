@@ -36,6 +36,11 @@ helpList="""
 -<名子>
 -----------------------------
 
+範例:建立禱告名單
+-----------------------------
+建立禱告名單:2-2區禱告名單二月30號
+-----------------------------
+
 範例:增加已確定禱告名單
 -----------------------------
 1+弟兄三號
@@ -50,6 +55,8 @@ helpList="""
 -----------------------------
 -福音朋友二號
 -----------------------------
+
+
 """
 
 
@@ -293,40 +300,41 @@ def handle_message(event):
             newName=clientMessage[2:]
             if clientMessage[:2]=="1+":
                 add_prayUser(tableName,newName,1,profile.display_name)
-                clientMessage="Hi "+profile.display_name+" 已經加入確認名單 "+newName
+                sendMessage="Hi "+profile.display_name+" 已經加入確認名單 "+newName
             if clientMessage[:2]=="2+":
                 add_prayUser(tableName,newName,2,profile.display_name)
-                clientMessage="Hi "+profile.display_name+" 已經加入待確認名單 "+newName
+                sendMessage="Hi "+profile.display_name+" 已經加入待確認名單 "+newName
             if clientMessage[:1]=="-":
                 newName=clientMessage[1:]
                 print("clientMessage[:1]==\"-\"")
-                if delete_prayUser(tableName,newName): clientMessage="Hi "+profile.display_name+" 已經刪除名單 "+newName
-                else: clientMessage="Hi "+profile.display_name+" "+newName+" 名子不存在"
+                if delete_prayUser(tableName,newName): sendMessage="Hi "+profile.display_name+" 已經刪除名單 "+newName
+                else: sendMessage="Hi "+profile.display_name+" "+newName+" 名子不存在"
             
             
-            line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
+            line_bot_api.reply_message(event.reply_token,TextSendMessage(text=sendMessage))
         
         if "禱告名單" in clientMessage and sourceID['group_id']!=None:
             
             
             if "help" in clientMessage or "Help" in clientMessage or "HELP" in clientMessage :
-                clientMessage=helpList
-            elif "建立禱告名單:" in clientMessage:
+                sendMessage=helpList
+            elif "建立禱告名單" in clientMessage:
                 tableName=clientMessage.split(":")[1]
                 createPrayTable(sourceID['group_id'],tableName)
-                clientMessage="Hi "+profile.display_name+", 已經建立禱告名單:"+tableName
-            elif "更名禱告名單:" in clientMessage:
+                sendMessage="Hi "+profile.display_name+", 已經建立禱告名單:"+tableName
+            elif "更名禱告名單" in clientMessage:
                 newTableName=clientMessage[7:]
                 rename_tableName(sourceID['group_id'],newTableName)
+                sendMessage="Hi "+profile.display_name+", 已經更新禱告名單:"+tableName
             else :
                 if not check_table(sourceID['group_id']):
-                    clientMessage="請建立禱告名單 範例: '建立禱告名單:2-2區禱告名單二月30號'"
+                    sendMessage="請建立禱告名單 範例: '建立禱告名單:2-2區禱告名單二月30號'"
                 else:
-                    clientMessage=showPrayTable(sourceID['group_id'])
-                clientMessage="Hi "+profile.display_name+"\n"+clientMessage
+                    sendMessage=showPrayTable(sourceID['group_id'])
+                sendMessage="Hi "+profile.display_name+"\n"+sendMessage
                 
                 
-            line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
+            line_bot_api.reply_message(event.reply_token,TextSendMessage(text=sendMessage))
             
             
         
