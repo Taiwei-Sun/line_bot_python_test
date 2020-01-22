@@ -319,9 +319,13 @@ def handle_message(event):
             if "help" in clientMessage or "Help" in clientMessage or "HELP" in clientMessage :
                 sendMessage=helpList
             elif "建立禱告名單" in clientMessage:
-                tableName=clientMessage.split(":")[1]
-                createPrayTable(sourceID['group_id'],tableName)
-                sendMessage="Hi "+profile.display_name+", 已經建立禱告名單:"+tableName
+                newTableName=clientMessage[7:]#mark clientMessage.split(":")[1]
+                #if get_id(prayTable,prayTable[1][1],sourceID['group_id'])==None:
+                if tableName==None:
+                    createPrayTable(sourceID['group_id'],newTableName)
+                    sendMessage="Hi "+profile.display_name+", 已經建立禱告名單:"+newTableName
+                else:
+                    sendMessage="Hi "+profile.display_name+", 禱告名單:"+tableName+" 已經存在\n可以使用\n更名禱告名單:"+newTableName
             elif "更名禱告名單" in clientMessage:
                 newTableName=clientMessage[7:]
                 rename_tableName(sourceID['group_id'],newTableName)
