@@ -349,7 +349,7 @@ def handle_message(event):
         for i in range(int(messageLen/100)):
             tmpMessage=clientMessage[:100]
             clientMessage=clientMessage[100:]
-            modify_tables(userMessage[0],[userMessage[1][1],userMessage[1][2],userMessage[1][3]],[sourceID['user_id'],"'"+profile.display_name+"'","'"+tmpMessage+"'"],'i')
+            modify_tables(userMessage[0],[userMessage[1][1],userMessage[1][2],userMessage[1][3]],["'"+sourceID['user_id']+"'","'"+profile.display_name+"'","'"+tmpMessage+"'"],'i')
         
         modify_tables(userMessage[0],[userMessage[1][1],userMessage[1][2],userMessage[1][3]],["'"+sourceID['user_id']+"'","'"+profile.display_name+"'","'"+clientMessage+"'"],'i')
         sendMessage="Hi "+profile.display_name+", "+clientMessage #" It cannot be used for personal use"
