@@ -25,6 +25,7 @@ sessionTableColumns=["session_id","table_id","user_id","userType","addTime","byS
 prayTable=["prayTable",prayTableColumns]
 userTable=["userTable",userTableColumns]
 sessionTable=["sessionTable",sessionTableColumns]
+userMessage=["userMessage",["message_id","user_id","user_name","message"]]
 
 helpList="""
 可用功能
@@ -148,6 +149,7 @@ def get_id(table,column,str):
     table_id=None
     tableName=table[0]
     rows=modify_tables(tableName,[table[1][0],column],None,'r')
+    if rows==None: return None;
     for row in rows:
         if row[1]==str: table_id=row[0]
     return table_id
@@ -223,6 +225,7 @@ def createPrayTable(group_id,groupName):
     modify_tables("prayTable",[prayTableColumns[1],prayTableColumns[2]],["'"+group_id+"'","'"+groupName+"'"],'i')
 
 def filter_rows(table_id,rows):
+    if rows==None: return None;
     rowsF=[]
     for i in range(len(rows)):
         #print(rows[i][0])
@@ -315,7 +318,6 @@ def handle_message(event):
         
         if "禱告名單" in clientMessage and sourceID['group_id']!=None:
             
-            
             if "help" in clientMessage or "Help" in clientMessage or "HELP" in clientMessage :
                 sendMessage=helpList
             elif "建立禱告名單" in clientMessage:
@@ -325,7 +327,7 @@ def handle_message(event):
                     createPrayTable(sourceID['group_id'],newTableName)
                     sendMessage="Hi "+profile.display_name+", 已經建立禱告名單:"+newTableName
                 else:
-                    sendMessage="Hi "+profile.display_name+", 禱告名單:"+tableName+" 已經存在\n可以使用\n更名禱告名單:"+newTableName
+                    sendMessage="Hi "+profile.display_name+", 已經存在 禱告名單:"+tableName+"\n可以使用\n更名禱告名單:"+newTableName
             elif "更名禱告名單" in clientMessage:
                 newTableName=clientMessage[7:]
                 rename_tableName(sourceID['group_id'],newTableName)
@@ -343,19 +345,26 @@ def handle_message(event):
             
         
     else:# for personal
-        clientMessage="Hi "+profile.display_name+" It cannot be used for personal use"
-        line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
+        #messageLen=len(clientMessage)
+        #for i in range(messageLen/100)
+        #    tmpMessage=clientMessage[:100]
+        #    clientMessage=clientMessage[100:]
+        #    modify_tables(userMessage[0],[userMessage[1][1],userMessage[1][2],userMessage[1][3]],[sourceID['user_id'],profile.display_name,tmpMessage],'i')
+        #
+        #modify_tables(userMessage[0],[userMessage[1][1],userMessage[1][2],userMessage[1][3]],[sourceID['user_id'],profile.display_name,clientMessage],'i')
+        sendMessage="Hi "+profile.display_name+", "+clientMessage #" It cannot be used for personal use"
+        line_bot_api.reply_message(event.reply_token,TextSendMessage(text=sendMessage))
     
     
     if clientMessageArray[0]=="Fudge" : #"pray table not for personal use"
         
         if "reply" in clientMessage:
-            clientMessage=clientMessage.replace("Fudge ","")
+            sendMessage=clientMessage.replace("Fudge ","")
             sourceID=get_source(event)
             profile = line_bot_api.get_profile(sourceID['user_id'])
-            clientMessage="Hi "+profile.display_name+", "+clientMessage
+            sendMessage="Hi "+profile.display_name+", "+sendMessage
         
-        line_bot_api.reply_message(event.reply_token,TextSendMessage(text=clientMessage))
+        line_bot_api.reply_message(event.reply_token,TextSendMessage(text=sendMessage))
            
         
 
