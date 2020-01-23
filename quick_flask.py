@@ -225,7 +225,7 @@ def createPrayTable(group_id,groupName):
     modify_tables("prayTable",[prayTableColumns[1],prayTableColumns[2]],["'"+group_id+"'","'"+groupName+"'"],'i')
 
 def filter_rows(table_id,rows):
-    if rows==None: return None;
+    #if rows==None: return None;
     rowsF=[]
     for i in range(len(rows)):
         #print(rows[i][0])
@@ -255,7 +255,7 @@ def showPrayTable(group_id):
                 if userTmp!=None: clientMessage=clientMessage+str(number)+". "+userTmp+"\n"
                 else: clientMessage=clientMessage+" no user_id="+str(row[1])
         
-        clientMessage=clientMessage+str(number+1)+".\n"+str(number+2)+".\n"+str(number+3)+".\n"
+        clientMessage=clientMessage+"\n"
         clientMessage=clientMessage+"鼓勵中:\n"
         number=0
         for row in rows:
@@ -265,7 +265,7 @@ def showPrayTable(group_id):
                 if userTmp!=None: clientMessage=clientMessage+str(number)+". "+userTmp+"\n"
                 else: clientMessage=clientMessage+" no user_id="+str(row[1])
 
-        clientMessage=clientMessage+str(number+1)+".\n"+str(number+2)+".\n"+str(number+3)+".\n"
+        clientMessage=clientMessage+"\n"
         return clientMessage
     return "not find table, no group_id="+group_id
     
