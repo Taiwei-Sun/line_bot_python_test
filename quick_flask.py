@@ -225,7 +225,7 @@ def createPrayTable(group_id,groupName):
     modify_tables("prayTable",[prayTableColumns[1],prayTableColumns[2]],["'"+group_id+"'","'"+groupName+"'"],'i')
 
 def filter_rows(table_id,rows):
-    #if rows==None: return None;
+    if rows==None: return [];
     rowsF=[]
     for i in range(len(rows)):
         #print(rows[i][0])
