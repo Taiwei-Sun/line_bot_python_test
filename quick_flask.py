@@ -115,7 +115,7 @@ def modify_tables(tableName,columns,row,accessType):
             for i in range(rowLen):
                 if i != rowLen-1: command=command+str(row[i])+","
                 else: command=command+str(row[i])+");"
-            #print("command=\n"+command)
+            print("command=\n"+command)
             cur.execute(command)
         elif accessType=='u':
             command=commands[5]+" "+tableName+"\n"
