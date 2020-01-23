@@ -346,7 +346,7 @@ def handle_message(event):
         
     else:# for personal
         messageLen=len(clientMessage)
-        for i in range(messageLen/100)
+        for i in range(int(messageLen/100)):
             tmpMessage=clientMessage[:100]
             clientMessage=clientMessage[100:]
             modify_tables(userMessage[0],[userMessage[1][1],userMessage[1][2],userMessage[1][3]],[sourceID['user_id'],profile.display_name,tmpMessage],'i')
